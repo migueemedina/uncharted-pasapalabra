@@ -6,7 +6,7 @@
     <title>Uncharted: Edición Experto</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Special+Elite&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS RESPONSIVE (Mismos de la versión estable) --- */
+        /* --- ESTILOS RESPONSIVE --- */
         :root {
             --bg-color: #2c241b;
             --text-color: #dcd0c0;
@@ -189,20 +189,42 @@
             width: 100%; padding: 12px; margin-top: 5px;
         }
 
-        #end-screen {
-            display: none;
+        /* --- PANTALLAS DE ESTADO (INICIO / FIN) --- */
+        #end-screen, #start-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(30, 20, 10, 0.98);
             z-index: 100;
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             padding: 20px;
         }
-        #end-screen h1 { font-family: 'Cinzel'; color: var(--accent-gold); font-size: 40px;}
-        .restart-btn { margin-top: 30px; background: var(--accent-red); color: white; padding: 15px 30px; }
+
+        #end-screen { display: none; } /* Oculto por defecto */
+        
+        /* La pantalla de inicio es visible al cargar */
+        #start-screen { display: flex; } 
+
+        h1 { font-family: 'Cinzel'; color: var(--accent-gold); font-size: 40px; margin-bottom: 10px; }
+        
+        .start-btn, .restart-btn { 
+            margin-top: 30px; 
+            background: var(--accent-red); 
+            color: white; 
+            padding: 15px 30px; 
+            border: 2px solid #fff;
+            box-shadow: 0 0 15px var(--accent-red);
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .start-btn:hover, .restart-btn:hover {
+            transform: scale(1.05);
+            background: #b71c1c;
+        }
 
         @media (max-height: 500px) {
             .game-title { display: none; }
@@ -214,23 +236,34 @@
 </head>
 <body>
 
+    <audio id="game-music" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+        <source src="musica.ogg" type="audio/ogg">
+    </audio>
+
     <div id="game-wrapper">
-        <div class="game-title">Uncharted: Pasapalabra</div>
+        <div class="game-title">Uncharted - Pasapalabra</div>
         <div id="letters-layer"></div>
         <div id="ui-layer">
             <div id="timer-ring">240</div>
             <div class="question-box">
-                <div id="clue-type" class="hint-label">CARGANDO...</div>
-                <div id="definition" class="definition-text">Inicializando sistema...</div>
+                <div id="clue-type" class="hint-label">ESPERANDO...</div>
+                <div id="definition" class="definition-text">Presiona comenzar...</div>
             </div>
             <div class="input-area">
-                <input type="text" id="user-input" placeholder="Respuesta" autocomplete="off">
+                <input type="text" id="user-input" placeholder="Respuesta" autocomplete="off" disabled>
                 <button class="btn-ok" onclick="verifyAnswer()">→</button>
             </div>
             <div>
                 <button class="btn-pass" onclick="passTurn()">SALTAR</button>
             </div>
         </div>
+    </div>
+
+    <div id="start-screen">
+        <h1>UNCHARTED</h1>
+        <p style="font-size: 18px; color: #aaa;">Edición Experto</p>
+        <button class="start-btn" onclick="startGame()">COMENZAR AVENTURA</button>
     </div>
 
     <div id="end-screen">
@@ -272,10 +305,30 @@
         ];
 
         let currentIndex = 0;
-        let timeLeft = 240; // Más tiempo para leer descripciones largas
+        let timeLeft = 240; 
         let interval;
         let roscoDOM = [];
-        let gameActive = true;
+        let gameActive = false; // Inicia pausado hasta dar click
+
+        function startGame() {
+            // 1. Ocultar pantalla de inicio
+            document.getElementById('start-screen').style.display = 'none';
+            
+            // 2. Iniciar Música
+            const music = document.getElementById('game-music');
+            music.volume = 0.3; // Volumen al 30% para no aturdir
+            music.play().catch(e => console.log("Error de audio:", e));
+
+            // 3. Activar lógica de juego
+            gameActive = true;
+            document.getElementById('user-input').disabled = false;
+            document.getElementById('user-input').focus();
+            
+            // 4. Arrancar timer y UI
+            createLetters();
+            startTimer();
+            updateUI();
+        }
 
         function updateLayout() {
             const lettersLayer = document.getElementById('letters-layer');
@@ -290,7 +343,7 @@
                 let y = Math.sin(rad) * radius;
                 div.style.transform = `translate(${x}px, ${y}px)`;
                 if(div.classList.contains('active')) {
-                     div.style.transform += " scale(1.4)";
+                      div.style.transform += " scale(1.4)";
                 }
             });
         }
@@ -335,7 +388,7 @@
             if (!found) { finishGame(); return; }
 
             roscoDOM.forEach(l => l.classList.remove('active'));
-            roscoDOM[currentIndex].classList.add('active');
+            if(roscoDOM[currentIndex]) roscoDOM[currentIndex].classList.add('active');
             updateLayout();
 
             const current = data[currentIndex];
@@ -381,6 +434,9 @@
             if(correctCount === data.length) title = "¡SIC PARVIS MAGNA!";
             document.getElementById('end-title').innerText = title;
             document.getElementById('end-score').innerText = `Tesoros: ${correctCount} de ${data.length}`;
+            
+            // Pausar música al final si quieres
+            // document.getElementById('game-music').pause(); 
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -388,11 +444,10 @@
             document.getElementById('user-input').addEventListener('keydown', (e) => {
                 if(e.key === 'Enter') verifyAnswer();
             });
-            createLetters();
-            startTimer();
-            updateUI();
+            // Ya no iniciamos createLetters/StartTimer aquí, sino en startGame()
+            // Simplemente posicionamos las letras iniciales para que se vea bonito de fondo
+            createLetters(); 
         });
     </script>
 </body>
-
 </html>
