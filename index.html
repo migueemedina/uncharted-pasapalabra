@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Uncharted Mobile Debug</title>
+    <title>Uncharted: Edición Experto</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Special+Elite&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS RESPONSIVE --- */
+        /* --- ESTILOS RESPONSIVE (Mismos de la versión estable) --- */
         :root {
             --bg-color: #2c241b;
             --text-color: #dcd0c0;
@@ -24,7 +24,7 @@
             font-family: 'Special Elite', cursive;
             margin: 0;
             height: 100vh;
-            height: 100dvh; /* Soporte mejorado para móviles */
+            height: 100dvh; 
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -32,7 +32,6 @@
             justify-content: center;
         }
 
-        /* Capas del juego: Una encima de otra */
         #game-wrapper {
             position: relative;
             width: 100%;
@@ -44,7 +43,6 @@
             align-items: center;
         }
 
-        /* Capa 1: El Título (Fondo) */
         .game-title {
             position: absolute;
             top: 5%;
@@ -58,7 +56,6 @@
             pointer-events: none;
         }
 
-        /* Capa 2: Las Letras (Rosco) */
         #letters-layer {
             position: absolute;
             top: 0;
@@ -66,7 +63,7 @@
             width: 100%;
             height: 100%;
             z-index: 2;
-            pointer-events: none; /* Dejar pasar clicks al centro */
+            pointer-events: none; 
         }
 
         .letter-node {
@@ -85,7 +82,6 @@
             font-family: 'Cinzel', serif;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
             transition: transform 0.3s ease;
-            /* Centrado inicial para evitar saltos */
             top: 50%; 
             left: 50%;
             margin-top: -19px;
@@ -96,14 +92,13 @@
             background: var(--accent-red);
             color: white;
             border-color: white;
-            transform: scale(1.4) !important; /* Forzamos la escala */
+            transform: scale(1.4) !important; 
             z-index: 10;
         }
         
         .letter-node.correct { background: var(--accent-green); color: white; }
         .letter-node.wrong { background: #5d4037; color: #ffab91; opacity: 0.6; }
 
-        /* Capa 3: Interfaz (UI) */
         #ui-layer {
             z-index: 5;
             width: 85%;
@@ -111,10 +106,11 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            background: rgba(44, 36, 27, 0.6); /* Fondo semi-transparente para leer mejor */
+            background: rgba(44, 36, 27, 0.85); 
             padding: 20px;
-            border-radius: 20px;
-            backdrop-filter: blur(2px);
+            border-radius: 10px;
+            border: 1px solid #5c4033;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
         #timer-ring {
@@ -128,10 +124,9 @@
 
         .question-box {
             background: #f5e6ca;
-            border: 3px double #5c4033;
-            border-radius: 8px;
+            border: 2px dashed #5c4033;
+            border-radius: 4px;
             padding: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             min-height: 110px;
             color: #3e2723;
             display: flex;
@@ -150,9 +145,10 @@
         }
 
         .definition-text {
-            font-size: clamp(14px, 4.5vw, 18px);
-            line-height: 1.3;
+            font-size: clamp(14px, 4.5vw, 17px);
+            line-height: 1.4;
             font-weight: bold;
+            font-style: italic;
         }
 
         .input-area {
@@ -193,7 +189,6 @@
             width: 100%; padding: 12px; margin-top: 5px;
         }
 
-        /* Pantalla Final */
         #end-screen {
             display: none;
             position: absolute;
@@ -206,13 +201,12 @@
             text-align: center;
             padding: 20px;
         }
-        #end-screen h1 { font-family: 'Cinzel'; color: var(--accent-gold); }
+        #end-screen h1 { font-family: 'Cinzel'; color: var(--accent-gold); font-size: 40px;}
         .restart-btn { margin-top: 30px; background: var(--accent-red); color: white; padding: 15px 30px; }
 
-        /* MODO HORIZONTAL (Landscape) */
         @media (max-height: 500px) {
             .game-title { display: none; }
-            #ui-layer { width: 60%; gap: 5px; padding: 10px; }
+            #ui-layer { width: 70%; gap: 5px; padding: 10px; }
             .question-box { min-height: 60px; }
             #timer-ring { font-size: 25px; }
         }
@@ -221,18 +215,14 @@
 <body>
 
     <div id="game-wrapper">
-        <div class="game-title">Uncharted Pasapalabra</div>
-        
+        <div class="game-title">Uncharted: El Diario</div>
         <div id="letters-layer"></div>
-
         <div id="ui-layer">
-            <div id="timer-ring">200</div>
-            
+            <div id="timer-ring">240</div>
             <div class="question-box">
                 <div id="clue-type" class="hint-label">CARGANDO...</div>
-                <div id="definition" class="definition-text">Si lees esto, el juego está listo.</div>
+                <div id="definition" class="definition-text">Inicializando sistema...</div>
             </div>
-
             <div class="input-area">
                 <input type="text" id="user-input" placeholder="Respuesta" autocomplete="off">
                 <button class="btn-ok" onclick="verifyAnswer()">→</button>
@@ -246,75 +236,59 @@
     <div id="end-screen">
         <h1 id="end-title">FIN</h1>
         <div id="end-score" style="color:#dcd0c0; font-size:20px;"></div>
-        <button class="restart-btn" onclick="location.reload()">REINTENTAR</button>
+        <button class="restart-btn" onclick="location.reload()">NUEVA BÚSQUEDA</button>
     </div>
 
     <script>
-        // --- DATOS DEL JUEGO ---
+        // --- DICCIONARIO EXPERTO (LORE PROFUNDO) ---
         const data = [
-            { id: "a", letter: "A", answer: "Avery", type: 0, question: "Pirata cuyo tesoro busca Nathan en Uncharted 4." },
-            { id: "b", letter: "B", answer: "Borneo", type: 0, question: "Isla donde comienza la acción de Uncharted 2." },
-            { id: "c", letter: "C", answer: "Chloe", type: 0, question: "Cazatesoros australiana, compañera y rival." },
-            { id: "d", letter: "D", answer: "Drake", type: 0, question: "Apellido adoptado por Nathan." },
-            { id: "e", letter: "E", answer: "Elena", type: 0, question: "Periodista y gran amor de Nathan." },
-            { id: "f", letter: "F", answer: "Francis", type: 0, question: "Nombre del navegante del anillo." },
-            { id: "g", letter: "G", answer: "Granada", type: 0, question: "¡Cuidado, ______! (Explosivo)." },
-            { id: "h", letter: "H", answer: "Harry", type: 0, question: "Nombre de pila de Flynn, el traidor." },
-            { id: "i", letter: "I", answer: "Iram", type: 0, question: "La Atlántida de las Arenas: ____ de los Pilares." },
-            { id: "j", letter: "J", answer: "Journal", type: 0, question: "Nombre en inglés del diario de notas." },
-            { id: "k", letter: "K", answer: "Karl", type: 0, question: "Schäfer, explorador del Himalaya." },
-            { id: "l", letter: "L", answer: "Libertalia", type: 0, question: "Colonia pirata utópica." },
-            { id: "m", letter: "M", answer: "Marco", type: 0, question: "Polo, explorador veneciano." },
-            { id: "n", letter: "N", answer: "Nadine", type: 0, question: "Líder de Shoreline." },
-            { id: "ñ", letter: "Ñ", answer: "Compañero", type: 1, question: "CONTIENE LA Ñ: Como Sully llama a Nate." },
-            { id: "o", letter: "O", answer: "Oro", type: 0, question: "Material del ídolo maldito." },
-            { id: "p", letter: "P", answer: "Panama", type: 0, question: "País de la cárcel de Nate y Sam." },
-            { id: "q", letter: "Q", answer: "Arqueologo", type: 1, question: "CONTIENE LA Q: Profesión de Drake." },
-            { id: "r", letter: "R", answer: "Roman", type: 0, question: "Villano del primer juego." },
-            { id: "s", letter: "S", answer: "Sully", type: 0, question: "Victor Sullivan." },
-            { id: "t", letter: "T", answer: "Tenzin", type: 0, question: "Guía tibetano amigo de Drake." },
-            { id: "u", letter: "U", answer: "Ubar", type: 0, question: "Ciudad perdida en el desierto." },
-            { id: "v", letter: "V", answer: "Victor", type: 0, question: "Nombre real de Sully." },
-            { id: "w", letter: "W", answer: "Marlowe", type: 1, question: "CONTIENE LA W: Villana de Uncharted 3." },
-            { id: "x", letter: "X", answer: "Explorador", type: 1, question: "CONTIENE LA X: Persona que explora." },
-            { id: "y", letter: "Y", answer: "Yemen", type: 0, question: "País donde secuestran a Drake." },
-            { id: "z", letter: "Z", answer: "Zoran", type: 0, question: "Nombre de Lazarevic." },
+            { id: "a", letter: "A", answer: "Avery", type: 0, question: "Capitán pirata que perpetró el atraco del Gunsway y fundó una colonia utópica." },
+            { id: "b", letter: "B", answer: "Borneo", type: 0, question: "Isla de Indonesia donde Lazarevic estableció su campamento buscando la Piedra Cintamani." },
+            { id: "c", letter: "C", answer: "Chloe", type: 0, question: "Cazatesoros de ascendencia india que traiciona (y luego ayuda) a Drake en Nepal." },
+            { id: "d", letter: "D", answer: "Drake", type: 0, question: "Apellido falso que Nathan adoptó en el orfanato St. Francis tras huir de la policía." },
+            { id: "e", letter: "E", answer: "Elena", type: 0, question: "Presentadora de TV que costeó la expedición para recuperar el ataúd de Francis Drake." },
+            { id: "f", letter: "F", answer: "Francis", type: 0, question: "Sir ______ Drake. Navegante que supuestamente murió de disentería en Panamá." },
+            { id: "g", letter: "G", answer: "Granada", type: 0, question: "Arma explosiva MK-NDI que Drake suele encontrar colgada en los cinturones enemigos." },
+            { id: "h", letter: "H", answer: "Harry", type: 0, question: "Nombre de pila del socio que engañó a Nathan para robar la lámpara en el museo de Estambul." },
+            { id: "i", letter: "I", answer: "Iram", type: 0, question: "Ciudad legendaria oculta en el desierto de Rub' al Khali, maldita por los genios." },
+            { id: "j", letter: "J", answer: "Journal", type: 0, question: "Nombre en inglés de la libreta llena de bocetos y pistas que Nathan lleva en el bolsillo." },
+            { id: "k", letter: "K", answer: "Karl", type: 0, question: "Apellido del explorador alemán de la SS que mató a sus propios hombres para proteger Shambhala." },
+            { id: "l", letter: "L", answer: "Libertalia", type: 0, question: "Colonia comercial perdida fundada por doce capitanes piratas y sus tripulaciones." },
+            { id: "m", letter: "M", answer: "Marco", type: 0, question: "Explorador veneciano cuya flota perdida en 1292 transportaba la Piedra Cintamani." },
+            { id: "n", letter: "N", answer: "Nadine", type: 0, question: "Ex-líder de Shoreline que perdió su empresa tras pelear contra los hermanos Drake." },
+            { id: "ñ", letter: "Ñ", answer: "Compañero", type: 1, question: "CONTIENE LA Ñ: Palabra que Sully usa constantemente para referirse a Nathan con afecto." },
+            { id: "o", letter: "O", answer: "Oro", type: 0, question: "El Dorado no era una ciudad, era una estatua gigante de este material." },
+            { id: "p", letter: "P", answer: "Panama", type: 0, question: "País donde Nathan, Sam y Rafe sobornaron al alcaide Vargas para investigar una celda." },
+            { id: "q", letter: "Q", answer: "Arqueologo", type: 1, question: "CONTIENE LA Q: Profesión que Harry Flynn desprecia, llamando a Drake 'ladrón de poca monta'." },
+            { id: "r", letter: "R", answer: "Rafe", type: 0, question: "Socio millonario que pasó 15 años buscando el tesoro de Avery por su cuenta." },
+            { id: "s", letter: "S", answer: "Sully", type: 0, question: "Mentor que sacó a un joven Nathan de las calles de Cartagena, Colombia." },
+            { id: "t", letter: "T", answer: "Tenzin", type: 0, question: "Líder de una aldea tibetana que rescata a Nathan tras el accidente de tren." },
+            { id: "u", letter: "U", answer: "U3", type: 0, question: "Abreviatura común entre fans para referirse a 'La Traición de Drake' (Juego)." },
+            { id: "v", letter: "V", answer: "Vacio", type: 1, question: "CONTIENE LA V: Según Marlowe, esto es lo que Nathan tiene en su corazón y trata de llenar." },
+            { id: "w", letter: "W", answer: "Wyrm", type: 1, question: "CONTIENE LA W: (Ref. Easter Egg) Apodo para los dragones, similar a lo que Drake busca en cuevas." },
+            { id: "x", letter: "X", answer: "Extincion", type: 1, question: "CONTIENE LA X: Destino que sufrieron los habitantes de Shambhala y Ubar por su ambición." },
+            { id: "y", letter: "Y", answer: "Yemen", type: 0, question: "País donde Nathan es drogado y obligado a recitar las coordenadas de las estrellas." },
+            { id: "z", letter: "Z", answer: "Zoran", type: 0, question: "Criminal de guerra serbio con media cara quemada que busca la inmortalidad." },
         ];
 
         let currentIndex = 0;
-        let timeLeft = 200;
+        let timeLeft = 240; // Más tiempo para leer descripciones largas
         let interval;
-        let roscoDOM = []; // Guardamos referencias a los Divs de las letras
+        let roscoDOM = [];
         let gameActive = true;
 
-        // --- FUNCIONES VISUALES ---
-        
         function updateLayout() {
-            const container = document.getElementById('game-wrapper');
             const lettersLayer = document.getElementById('letters-layer');
-            
-            // Calculamos el radio basado en lo más pequeño (ancho o alto)
             const minDim = Math.min(window.innerWidth, window.innerHeight);
-            const radius = minDim * 0.40; // 40% del tamaño menor
-            
-            const centerX = lettersLayer.offsetWidth / 2;
-            const centerY = lettersLayer.offsetHeight / 2;
+            const radius = minDim * 0.40; 
             const total = data.length;
 
-            // Movemos las letras ya existentes
             roscoDOM.forEach((div, i) => {
                 let angle = (360 / total) * i - 90;
                 let rad = angle * (Math.PI / 180);
-                
-                // Posición relativa al centro
                 let x = Math.cos(rad) * radius;
                 let y = Math.sin(rad) * radius;
-
-                // Aplicamos translate desde el centro
-                // Nota: CSS ya centra el div con top:50% left:50%
                 div.style.transform = `translate(${x}px, ${y}px)`;
-
-                // Si es la activa, agregamos escala visual extra si queremos
                 if(div.classList.contains('active')) {
                      div.style.transform += " scale(1.4)";
                 }
@@ -323,24 +297,18 @@
 
         function createLetters() {
             const layer = document.getElementById('letters-layer');
-            layer.innerHTML = ''; // Limpiamos SOLO la capa de letras
+            layer.innerHTML = ''; 
             roscoDOM = [];
-
             data.forEach((item) => {
                 let div = document.createElement('div');
                 div.className = 'letter-node';
                 div.innerText = item.letter;
-                
                 layer.appendChild(div);
                 roscoDOM.push(div);
                 item.status = 'pending';
             });
-            
-            // Posicionarlas
             updateLayout();
         }
-
-        // --- LÓGICA DE JUEGO ---
 
         function startTimer() {
             interval = setInterval(() => {
@@ -353,11 +321,8 @@
 
         function updateUI() {
             if(!gameActive) return;
-
-            // Buscar siguiente pendiente
             let found = false;
             let checks = 0;
-            // Evitamos bucle infinito si todo está respondido
             while(checks < data.length) {
                 if(data[currentIndex].status === 'pending') {
                     found = true;
@@ -367,38 +332,24 @@
                 if(currentIndex >= data.length) currentIndex = 0;
                 checks++;
             }
+            if (!found) { finishGame(); return; }
 
-            if (!found) {
-                finishGame();
-                return;
-            }
-
-            // Actualizar estado visual
             roscoDOM.forEach(l => l.classList.remove('active'));
             roscoDOM[currentIndex].classList.add('active');
-            
-            // Forzar actualización de posición para aplicar escala
             updateLayout();
 
             const current = data[currentIndex];
             document.getElementById('clue-type').innerText = current.type === 0 
                 ? `EMPIEZA POR ${current.letter}` 
                 : `CONTIENE LA ${current.letter}`;
-            
             document.getElementById('definition').innerText = current.question;
-            
-            const input = document.getElementById('user-input');
-            input.value = '';
-            // En móvil, auto-focus puede ser molesto, lo quitamos por ahora
-            // input.focus(); 
+            document.getElementById('user-input').value = '';
         }
 
         function verifyAnswer() {
             if(!gameActive) return;
-
             let input = document.getElementById('user-input').value.trim().toLowerCase();
             let correct = data[currentIndex].answer.toLowerCase();
-
             input = input.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             correct = correct.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
@@ -409,7 +360,6 @@
                 data[currentIndex].status = 'wrong';
                 roscoDOM[currentIndex].classList.add('wrong');
             }
-            
             currentIndex++;
             if(currentIndex >= data.length) currentIndex = 0;
             updateUI();
@@ -426,35 +376,22 @@
             gameActive = false;
             clearInterval(interval);
             const correctCount = data.filter(d => d.status === 'correct').length;
-            const wrongCount = data.filter(d => d.status === 'wrong').length;
-            
             document.getElementById('end-screen').style.display = 'flex';
-            
-            let title = "TIEMPO AGOTADO";
-            if(timeLeft > 0) title = "MISIÓN CUMPLIDA";
+            let title = "FIN DEL JUEGO";
             if(correctCount === data.length) title = "¡SIC PARVIS MAGNA!";
-
             document.getElementById('end-title').innerText = title;
-            document.getElementById('end-score').innerText = `Tesoros: ${correctCount} | Fallos: ${wrongCount}`;
+            document.getElementById('end-score').innerText = `Tesoros: ${correctCount} de ${data.length}`;
         }
 
-        // --- INICIALIZACIÓN SEGURA ---
-        
         document.addEventListener("DOMContentLoaded", () => {
-            // Ajustar al cambiar tamaño (girar móvil)
             window.addEventListener('resize', updateLayout);
-            
-            // Enter key
             document.getElementById('user-input').addEventListener('keydown', (e) => {
                 if(e.key === 'Enter') verifyAnswer();
             });
-
-            // Arrancar
             createLetters();
             startTimer();
             updateUI();
         });
-
     </script>
 </body>
 </html>
