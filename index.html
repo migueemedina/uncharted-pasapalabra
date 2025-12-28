@@ -6,7 +6,7 @@
     <title>Uncharted: Edición Experto</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Special+Elite&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS RESPONSIVE --- */
+        /* --- ESTILOS GENERALES --- */
         :root {
             --bg-color: #2c241b;
             --text-color: #dcd0c0;
@@ -58,55 +58,66 @@
 
         #letters-layer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none; 
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; pointer-events: none; 
         }
 
         .letter-node {
             position: absolute;
-            width: 38px;
-            height: 38px;
+            width: 38px; height: 38px;
             border-radius: 50%;
             background: var(--accent-gold);
             border: 2px solid #5c4033;
             color: #3e2723;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 16px;
-            font-family: 'Cinzel', serif;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; font-size: 16px; font-family: 'Cinzel', serif;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease;
-            top: 50%; 
-            left: 50%;
-            margin-top: -19px;
-            margin-left: -19px;
+            transition: transform 0.3s ease, background 0.3s, color 0.3s;
+            top: 50%; left: 50%;
+            margin-top: -19px; margin-left: -19px;
         }
 
         .letter-node.active {
-            background: var(--accent-red);
-            color: white;
-            border-color: white;
-            transform: scale(1.4) !important; 
+            background: #fff; color: #000;
+            border-color: var(--accent-gold);
+            transform: scale(1.5) !important; 
             z-index: 10;
+            box-shadow: 0 0 15px var(--accent-gold);
         }
         
-        .letter-node.correct { background: var(--accent-green); color: white; }
-        .letter-node.wrong { background: #5d4037; color: #ffab91; opacity: 0.6; }
+        .letter-node.correct { background: var(--accent-green); color: white; border-color: #fff; }
+        .letter-node.wrong { background: #5d4037; color: #ffab91; opacity: 0.8; }
+
+        /* --- ANIMACIONES --- */
+        @keyframes pop-gold {
+            0% { transform: scale(1.5); box-shadow: 0 0 0 rgba(238, 187, 85, 0); }
+            50% { transform: scale(2.0); box-shadow: 0 0 30px var(--accent-gold); background: #fff; }
+            100% { transform: scale(1); }
+        }
+        @keyframes shake-red {
+            0% { transform: translate(0, 0) scale(1.4); }
+            20% { transform: translate(-5px, 0) scale(1.4); }
+            40% { transform: translate(5px, 0) scale(1.4); }
+            60% { transform: translate(-5px, 0) scale(1.4); }
+            80% { transform: translate(5px, 0) scale(1.4); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        .anim-correct { animation: pop-gold 0.6s ease-out; }
+        .anim-wrong { animation: shake-red 0.5s ease-in-out; }
+
+        @keyframes input-flash-green { 0% { background: #2e7d32; } 100% { background: rgba(0,0,0,0.4); } }
+        @keyframes input-flash-red { 0% { background: #d32f2f; } 100% { background: rgba(0,0,0,0.4); } }
+
+        .flash-green { animation: input-flash-green 0.5s; }
+        .flash-red { animation: input-flash-red 0.5s; }
 
         #ui-layer {
             z-index: 5;
             width: 85%;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background: rgba(44, 36, 27, 0.85); 
+            display: flex; flex-direction: column; gap: 12px;
+            background: rgba(44, 36, 27, 0.9); 
             padding: 20px;
             border-radius: 10px;
             border: 1px solid #5c4033;
@@ -115,11 +126,9 @@
 
         #timer-ring {
             font-family: 'Cinzel', serif;
-            font-size: 40px;
-            color: #ffca28;
+            font-size: 40px; color: #ffca28;
             text-shadow: 2px 2px 4px #000;
-            margin: 0;
-            line-height: 1;
+            margin: 0; line-height: 1;
         }
 
         .question-box {
@@ -129,58 +138,54 @@
             padding: 15px;
             min-height: 110px;
             color: #3e2723;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            display: flex; flex-direction: column; justify-content: center;
         }
 
         .hint-label {
-            font-size: 14px;
-            color: #bf360c;
-            font-weight: bold;
-            font-family: 'Cinzel', serif;
+            font-size: 14px; color: #bf360c;
+            font-weight: bold; font-family: 'Cinzel', serif;
             border-bottom: 2px solid #5c4033;
-            display: inline-block;
-            margin: 0 auto 5px auto;
+            display: inline-block; margin: 0 auto 5px auto;
         }
 
         .definition-text {
             font-size: clamp(14px, 4.5vw, 17px);
-            line-height: 1.4;
-            font-weight: bold;
-            font-style: italic;
+            line-height: 1.4; font-weight: bold; font-style: italic;
         }
 
-        .input-area {
-            display: flex;
-            gap: 5px;
-            height: 45px;
+        .guide-container { margin-bottom: 5px; min-height: 30px; }
+        
+        .guide-btn {
+            display: inline-block;
+            font-family: 'Special Elite', serif; font-size: 12px;
+            text-decoration: none; color: #3e2723;
+            background: #eebb55; padding: 5px 10px;
+            border-radius: 4px; border: 1px solid #3e2723;
+            cursor: pointer; transition: all 0.2s;
+            text-transform: uppercase; font-weight: bold;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
         }
+        .guide-btn:hover { background: #fff; transform: translateY(-1px); }
+
+        .input-area { display: flex; gap: 5px; height: 45px; }
 
         input {
-            flex: 1;
-            background: rgba(0,0,0,0.4);
+            flex: 1; background: rgba(0,0,0,0.4);
             border: 1px solid var(--accent-gold);
-            border-radius: 4px;
-            color: var(--accent-gold);
-            font-size: 18px;
-            padding: 0 10px;
+            border-radius: 4px; color: var(--accent-gold);
+            font-size: 18px; padding: 0 10px;
             font-family: 'Special Elite', serif;
-            text-align: center;
-            outline: none;
+            text-align: center; outline: none;
+            transition: background 0.2s;
         }
         input::placeholder { color: #887766; }
         input:focus { border-color: #fff; background: rgba(0,0,0,0.6); }
 
         button {
-            border: none;
-            padding: 0 20px;
-            font-family: 'Cinzel', serif;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            border-radius: 4px;
-            font-size: 14px;
+            border: none; padding: 0 20px;
+            font-family: 'Cinzel', serif; font-weight: bold;
+            cursor: pointer; text-transform: uppercase;
+            border-radius: 4px; font-size: 14px;
         }
 
         .btn-ok { background: var(--accent-gold); color: #3e2723; }
@@ -189,41 +194,62 @@
             width: 100%; padding: 12px; margin-top: 5px;
         }
 
-        /* --- PANTALLAS DE ESTADO (INICIO / FIN) --- */
         #end-screen, #start-screen {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(30, 20, 10, 0.98);
             z-index: 100;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            text-align: center; padding: 20px;
+            overflow-y: auto;
         }
 
-        #end-screen { display: none; } /* Oculto por defecto */
-        
-        /* La pantalla de inicio es visible al cargar */
+        #end-screen { display: none; } 
         #start-screen { display: flex; } 
 
         h1 { font-family: 'Cinzel'; color: var(--accent-gold); font-size: 40px; margin-bottom: 10px; }
         
-        .start-btn, .restart-btn { 
-            margin-top: 30px; 
-            background: var(--accent-red); 
-            color: white; 
-            padding: 15px 30px; 
-            border: 2px solid #fff;
+        .main-btn { 
+            margin-top: 15px; 
+            background: var(--accent-red); color: white; 
+            padding: 15px 30px; border: 2px solid #fff;
             box-shadow: 0 0 15px var(--accent-red);
-            font-size: 18px;
-            transition: all 0.2s;
+            font-size: 18px; transition: all 0.2s; width: 260px;
+        }
+        .main-btn:hover { transform: scale(1.05); background: #b71c1c; }
+        
+        .share-btn {
+            background: #4fc3f7; color: #0d47a1;
+            margin-top: 10px; border-color: #0d47a1;
+            box-shadow: 0 0 15px #4fc3f7;
+        }
+        .share-btn:hover { background: #81d4fa; }
+
+        #ranking-box {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--accent-gold);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            width: 90%;
+            max-width: 400px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        
+        .rank-title { font-size: 24px; color: var(--accent-gold); font-family: 'Cinzel'; margin-bottom: 5px; }
+        .rank-msg { font-size: 16px; margin-bottom: 10px; font-style: italic; color: #fff; }
+        
+        .rank-input {
+            width: 100%; padding: 10px; font-size: 16px;
+            border-radius: 4px; border: 1px solid #ccc;
+            text-align: center;
         }
 
-        .start-btn:hover, .restart-btn:hover {
-            transform: scale(1.05);
-            background: #b71c1c;
+        .submit-btn {
+            background: var(--accent-green); color: white;
+            width: 100%; margin-top: 5px;
+            padding: 12px;
+            box-shadow: 0 0 10px var(--accent-green);
         }
 
         @media (max-height: 500px) {
@@ -246,10 +272,18 @@
         <div id="letters-layer"></div>
         <div id="ui-layer">
             <div id="timer-ring">240</div>
+            
             <div class="question-box">
                 <div id="clue-type" class="hint-label">ESPERANDO...</div>
                 <div id="definition" class="definition-text">Presiona comenzar...</div>
             </div>
+
+            <div class="guide-container">
+                <a id="guide-link" href="#" target="_blank" class="guide-btn" style="display:none;">
+                    📖 Ver Lore / Pista
+                </a>
+            </div>
+
             <div class="input-area">
                 <input type="text" id="user-input" placeholder="Respuesta" autocomplete="off" disabled>
                 <button class="btn-ok" onclick="verifyAnswer()">→</button>
@@ -263,75 +297,493 @@
     <div id="start-screen">
         <h1>UNCHARTED</h1>
         <p style="font-size: 18px; color: #aaa;">Edición Experto</p>
-        <button class="start-btn" onclick="startGame()">COMENZAR AVENTURA</button>
+        <button class="main-btn" onclick="startGame()">COMENZAR AVENTURA</button>
     </div>
 
     <div id="end-screen">
         <h1 id="end-title">FIN</h1>
-        <div id="end-score" style="color:#dcd0c0; font-size:20px;"></div>
-        <button class="restart-btn" onclick="location.reload()">NUEVA BÚSQUEDA</button>
+        <div id="end-score" style="color:#dcd0c0; font-size:20px; margin-bottom: 10px;"></div>
+        
+        <div id="ranking-box">
+            <div id="rank-display-title" class="rank-title">Calculando Nivel...</div>
+            <div id="rank-display-msg" class="rank-msg">...</div>
+            
+            <form id="lead-form" onsubmit="submitScore(event)">
+                <input type="email" id="player-email" class="rank-input" placeholder="Tu mejor correo..." required>
+                <button type="submit" class="submit-btn main-btn" style="margin-top:10px; width:100%;">
+                    🏆 GUARDAR EN EL RANKING
+                </button>
+            </form>
+        </div>
+
+        <button class="main-btn share-btn" onclick="copyResult()">
+            📋 ¡Compartir en redes!
+        </button>
+        <button class="main-btn" onclick="location.reload()" style="background:transparent; border:1px solid #666; font-size:14px; margin-top:20px;">
+            Descartar y volver a jugar
+        </button>
     </div>
 
     <script>
-        // --- DICCIONARIO EXPERTO (LORE PROFUNDO) ---
-        const data = [
-            { id: "a", letter: "A", answer: "Avery", type: 0, question: "Capitán pirata que perpetró el atraco del Gunsway y fundó una colonia utópica." },
-            { id: "b", letter: "B", answer: "Borneo", type: 0, question: "Isla de Indonesia donde Lazarevic estableció su campamento buscando la Piedra Cintamani." },
-            { id: "c", letter: "C", answer: "Chloe", type: 0, question: "Cazatesoros de ascendencia india que traiciona (y luego ayuda) a Drake en Nepal." },
-            { id: "d", letter: "D", answer: "Drake", type: 0, question: "Apellido falso que Nathan adoptó en el orfanato St. Francis tras huir de la policía." },
-            { id: "e", letter: "E", answer: "Elena", type: 0, question: "Presentadora de TV que costeó la expedición para recuperar el ataúd de Francis Drake." },
-            { id: "f", letter: "F", answer: "Francis", type: 0, question: "Sir ______ Drake. Navegante que supuestamente murió de disentería en Panamá." },
-            { id: "g", letter: "G", answer: "Granada", type: 0, question: "Arma explosiva MK-NDI que Drake suele encontrar colgada en los cinturones enemigos." },
-            { id: "h", letter: "H", answer: "Harry", type: 0, question: "Nombre de pila del socio que engañó a Nathan para robar la lámpara en el museo de Estambul." },
-            { id: "i", letter: "I", answer: "Iram", type: 0, question: "Ciudad legendaria oculta en el desierto de Rub' al Khali, maldita por los genios." },
-            { id: "j", letter: "J", answer: "Journal", type: 0, question: "Nombre en inglés de la libreta llena de bocetos y pistas que Nathan lleva en el bolsillo." },
-            { id: "k", letter: "K", answer: "Karl", type: 0, question: "Apellido del explorador alemán de la SS que mató a sus propios hombres para proteger Shambhala." },
-            { id: "l", letter: "L", answer: "Libertalia", type: 0, question: "Colonia comercial perdida fundada por doce capitanes piratas y sus tripulaciones." },
-            { id: "m", letter: "M", answer: "Marco", type: 0, question: "Explorador veneciano cuya flota perdida en 1292 transportaba la Piedra Cintamani." },
-            { id: "n", letter: "N", answer: "Nadine", type: 0, question: "Ex-líder de Shoreline que perdió su empresa tras pelear contra los hermanos Drake." },
-            { id: "ñ", letter: "Ñ", answer: "Compañero", type: 1, question: "CONTIENE LA Ñ: Palabra que Sully usa constantemente para referirse a Nathan con afecto." },
-            { id: "o", letter: "O", answer: "Oro", type: 0, question: "El Dorado no era una ciudad, era una estatua gigante de este material." },
-            { id: "p", letter: "P", answer: "Panama", type: 0, question: "País donde Nathan, Sam y Rafe sobornaron al alcaide Vargas para investigar una celda." },
-            { id: "q", letter: "Q", answer: "Arqueologo", type: 1, question: "CONTIENE LA Q: Profesión que Harry Flynn desprecia, llamando a Drake 'ladrón de poca monta'." },
-            { id: "r", letter: "R", answer: "Rafe", type: 0, question: "Socio millonario que pasó 15 años buscando el tesoro de Avery por su cuenta." },
-            { id: "s", letter: "S", answer: "Sully", type: 0, question: "Mentor que sacó a un joven Nathan de las calles de Cartagena, Colombia." },
-            { id: "t", letter: "T", answer: "Tenzin", type: 0, question: "Líder de una aldea tibetana que rescata a Nathan tras el accidente de tren." },
-            { id: "u", letter: "U", answer: "U3", type: 0, question: "Abreviatura común entre fans para referirse a 'La Traición de Drake' (Juego)." },
-            { id: "v", letter: "V", answer: "Vacio", type: 1, question: "CONTIENE LA V: Según Marlowe, esto es lo que Nathan tiene en su corazón y trata de llenar." },
-            { id: "w", letter: "W", answer: "Wyrm", type: 1, question: "CONTIENE LA W: (Ref. Easter Egg) Apodo para los dragones, similar a lo que Drake busca en cuevas." },
-            { id: "x", letter: "X", answer: "Extincion", type: 1, question: "CONTIENE LA X: Destino que sufrieron los habitantes de Shambhala y Ubar por su ambición." },
-            { id: "y", letter: "Y", answer: "Yemen", type: 0, question: "País donde Nathan es drogado y obligado a recitar las coordenadas de las estrellas." },
-            { id: "z", letter: "Z", answer: "Zoran", type: 0, question: "Criminal de guerra serbio con media cara quemada que busca la inmortalidad." },
-        ];
+        // --- BASE DE DATOS MAESTRA (DB) ---
+        // Aquí agregas todas las variantes que quieras. 
+        // El script elegirá 1 al azar de 'variants' por cada letra al iniciar.
+        
+       const QUESTIONS_DB = [
+    {
+        letter: "A",
+        variants: [
+            { answer: "Avery", type: 0, question: "Capitán pirata que perpetró el atraco del Gunsway y fundó Libertalia.", link: "#" },
+            { answer: "Agartha", type: 0, question: "Ciudad perdida en el centro de la tierra, vinculada a la mitología de la Piedra Cintamani.", link: "#" },
+            { answer: "Atlantida", type: 0, question: "La 'Iram de los Pilares' es llamada a menudo la ______ de las Arenas.", link: "#" },
+            { answer: "Anillo", type: 0, question: "Objeto que Nathan lleva colgado al cuello con la inscripción 'Sic Parvis Magna'.", link: "#" },
+            { answer: "Avion", type: 0, question: "Vehículo del que cuelga Nathan en la famosa escena del desierto en Uncharted 3.", link: "#" },
+            { answer: "Arbol", type: 0, question: "En Shambhala, la savia azul proviene del ______ de la vida.", link: "#" },
+            { answer: "Asad", type: 0, question: "Lugarteniente de Katherine Marlowe que persigue a Drake en Yemen.", link: "#" },
+            { answer: "Akiva", type: 0, question: "Nombre del curador del museo al que Drake y Flynn intentan robar en Estambul.", link: "#" },
+            { answer: "Antorcha", type: 0, question: "Herramienta que usas en cuevas oscuras para ver y espantar arañas.", link: "#" },
+            { answer: "Amubaja", type: 0, question: "Río de la India cerca del cual Asav busca el Colmillo de Ganesh.", link: "#" }
+        ]
+    },
+    {
+        letter: "B",
+        variants: [
+            { answer: "Borneo", type: 0, question: "Isla de Indonesia donde comienza la aventura de Uncharted 2 con Sully y Chloe.", link: "#" },
+            { answer: "Bucanero", type: 0, question: "Término para referirse a los piratas como Avery o Tew que operaban en el Caribe.", link: "#" },
+            { answer: "Baldridge", type: 0, question: "Apellido del capitán Adam, uno de los fundadores de Libertalia.", link: "#" },
+            { answer: "Bazar", type: 0, question: "Tipo de mercado callejero donde ocurre la persecución en Yemen.", link: "#" },
+            { answer: "Barco", type: 0, question: "Vehículo donde Drake descubre las coordenadas del ataúd de Sir Francis en el primer juego.", link: "#" },
+            { answer: "Bitacora", type: 0, question: "Libro de registro de navegación que a menudo contiene pistas clave.", link: "#" },
+            { answer: "Bonilla", type: 0, question: "Cristobal de ______. Capitán español cuyo cadáver tiene un mapa del tesoro en Uncharted 4.", link: "#" },
+            { answer: "Bengala", type: 0, question: "Objeto luminoso rojo que usas para señalar posición o iluminar zonas oscuras.", link: "#" },
+            { answer: "Bunker", type: 0, question: "Instalación militar alemana en la isla de Uncharted 1 donde encuentras a los descendientes.", link: "#" },
+            { answer: "Bob", type: 0, question: "Nombre en clave que Sully usa por radio para avisar a Drake de peligro.", link: "#" }
+        ]
+    },
+    {
+        letter: "C",
+        variants: [
+            { answer: "Chloe", type: 0, question: "Frazer. Cazatesoros que protagoniza 'El Legado Perdido'.", link: "#" },
+            { answer: "Cutter", type: 0, question: "Charlie. Socio británico de Drake que sufre claustrofobia.", link: "#" },
+            { answer: "Cartagena", type: 0, question: "Ciudad de Colombia donde un joven Nathan conoce a Sully.", link: "#" },
+            { answer: "Castillo", type: 0, question: "Tipo de edificación en Siria y Francia que visitan en Uncharted 3.", link: "#" },
+            { answer: "Cintamani", type: 0, question: "Piedra legendaria budista que concede deseos, buscada en Uncharted 2.", link: "#" },
+            { answer: "Cass", type: 0, question: "Cassandra Morgan. Nombre real de la madre de Nathan y Sam.", link: "#" },
+            { answer: "Caliz", type: 0, question: "Copa sagrada. Uno de los tesoros coleccionables recurrentes.", link: "#" },
+            { answer: "Cuerda", type: 0, question: "Mecánica introducida en Uncharted 4 para balancearse con un gancho.", link: "#" },
+            { answer: "Crucifijo", type: 0, question: "La Cruz de San Dimas que busca Rafe Adler tiene forma de ______.", link: "#" },
+            { answer: "Camion", type: 0, question: "Vehículo que persigue implacablemente a Drake en el convoy de Madagascar.", link: "#" }
+        ]
+    },
+    {
+        letter: "D",
+        variants: [
+            { answer: "Drake", type: 0, question: "Apellido falso que Nathan adoptó en el orfanato St. Francis.", link: "#" },
+            { answer: "Dorado", type: 0, question: "El ______. Ídolo de oro maldito buscado en la primera entrega.", link: "#" },
+            { answer: "Daga", type: 0, question: "Arma ritual phurba que sirve como llave para entrar a Shambhala.", link: "#" },
+            { answer: "Djinn", type: 0, question: "Demonios de fuego de la mitología árabe que Drake alucina en el desierto.", link: "#" },
+            { answer: "Diario", type: 0, question: "Libreta donde Drake dibuja pistas y resuelve acertijos.", link: "#" },
+            { answer: "Disenteria", type: 0, question: "Causa oficial de la muerte de Sir Francis Drake, según la historia.", link: "#" },
+            { answer: "Desierto", type: 0, question: "El Rub' al Khali es un enorme ______ en la península arábiga.", link: "#" },
+            { answer: "Derrumbe", type: 0, question: "Evento catastrófico común cuando Drake escapa de una ruina antigua.", link: "#" },
+            { answer: "Dinamita", type: 0, question: "Explosivo que se usa a menudo para abrir puertas bloqueadas.", link: "#" },
+            { answer: "Descendientes", type: 0, question: "Criaturas mutadas que habitan el búnker alemán y la bóveda del tesoro.", link: "#" }
+        ]
+    },
+    {
+        letter: "E",
+        variants: [
+            { answer: "Elena", type: 0, question: "Fisher. Periodista que acompaña a Nathan y termina casándose con él.", link: "#" },
+            { answer: "Escocia", type: 0, question: "País donde se encuentra la Catedral de San Dimas y la tumba de Avery.", link: "#" },
+            { answer: "Estatua", type: 0, question: "Estructuras gigantes que a menudo hay que escalar para resolver puzles.", link: "#" },
+            { answer: "España", type: 0, question: "País de origen de la expedición que encontró El Dorado y sucumbió a la maldición.", link: "#" },
+            { answer: "Eddy", type: 0, question: "Raja. Líder de los piratas indonesios y rival de Drake.", link: "#" },
+            { answer: "Explorador", type: 0, question: "Profesión (o vocación) de Nathan Drake.", link: "#" },
+            { answer: "Esqueletos", type: 0, question: "Restos humanos que Drake suele encontrar alrededor de mesas de banquetes piratas.", link: "#" },
+            { answer: "Enigma", type: 0, question: "Acertijo o rompecabezas que bloquea el camino.", link: "#" },
+            { answer: "Evasion", type: 0, question: "Maniobra para rodar y esquivar disparos o ataques cuerpo a cuerpo.", link: "#" },
+            { answer: "Escondite", type: 0, question: "Lugar donde Drake y Elena viven retirados al inicio de Uncharted 4.", link: "#" }
+        ]
+    },
+    {
+        letter: "F",
+        variants: [
+            { answer: "Francis", type: 0, question: "Sir ______ Drake. Navegante que supuestamente murió de disentería.", link: "#" },
+            { answer: "Flynn", type: 0, question: "Harry ______. Ex-socio que traiciona a Drake en el museo de Estambul.", link: "#" },
+            { answer: "Fortaleza", type: 0, question: "Estructura defensiva, como la que Drake escala en Puerto Rico o Cartagena.", link: "#" },
+            { answer: "Fuego", type: 0, question: "Elemento que destruye la mansión francesa y el bar de Londres.", link: "#" },
+            { answer: "Flashback", type: 0, question: "Recurso narrativo usado para mostrar la infancia de Nate y Sam.", link: "#" },
+            { answer: "Fleet", type: 0, question: "Calle de Londres donde Marlowe tenía su base de operaciones.", link: "#" },
+            { answer: "Fuente", type: 0, question: "La ______ de la Juventud. Mito erróneo asociado a Shambhala.", link: "#" },
+            { answer: "Final", type: 0, question: "El capítulo ______ de Uncharted 4 muestra a la hija de Nathan.", link: "#" },
+            { answer: "Furgoneta", type: 0, question: "Vehículo que Elena conduce para salvar a Nate al final del capítulo del tren.", link: "#" },
+            { answer: "Fotografia", type: 0, question: "Modo de juego añadido en remasterizaciones para capturar imágenes.", link: "#" }
+        ]
+    },
+    {
+        letter: "G",
+        variants: [
+            { answer: "Gabriel", type: 0, question: "Roman. Antagonista principal de la primera entrega que busca El Dorado.", link: "#" },
+            { answer: "Granada", type: 0, question: "Arma explosiva MK-NDI que Drake suele encontrar en cinturones enemigos.", link: "#" },
+            { answer: "Gunsway", type: 0, question: "Nombre del barco mogol asaltado por Henry Avery con un botín inmenso.", link: "#" },
+            { answer: "Guarida", type: 0, question: "Lugar secreto de los piratas o villanos.", link: "#" },
+            { answer: "Ganesh", type: 0, question: "Deidad hindú con cabeza de elefante cuyo colmillo buscan Chloe y Nadine.", link: "#" },
+            { answer: "Guia", type: 0, question: "Tenzin actúa como ______ de Drake en las montañas del Himalaya.", link: "#" },
+            { answer: "Golpes", type: 0, question: "Combate cuerpo a cuerpo, fundamental cuando te quedas sin munición.", link: "#" },
+            { answer: "Globo", type: 0, question: "Terráqueo. Puzle recurrente donde debes alinear continentes o luces.", link: "#" },
+            { answer: "Guerra", type: 0, question: "Civil. Conflicto que asola Nepal durante los eventos de Uncharted 2.", link: "#" },
+            { answer: "Guardias", type: 0, question: "Soldados patrullando que debes eliminar con sigilo.", link: "#" }
+        ]
+    },
+    {
+        letter: "H",
+        variants: [
+            { answer: "Harry", type: 0, question: "Nombre de pila de Flynn, el socio que traiciona a Drake en el museo.", link: "#" },
+            { answer: "Himalaya", type: 0, question: "Cordillera montañosa donde Drake es rescatado por Tenzin.", link: "#" },
+            { answer: "Hector", type: 0, question: "Alcázar. Narcotraficante que supuestamente sacó a Sam de la cárcel.", link: "#" },
+            { answer: "Huesos", type: 0, question: "Símbolo pirata de calavera y ______ cruzados.", link: "#" },
+            { answer: "Helicoptero", type: 0, question: "Vehículo aéreo que a menudo sirve de jefe final o amenaza constante.", link: "#" },
+            { answer: "Huida", type: 0, question: "Acción de escapar corriendo, como en la escena del mercado o el derrumbe.", link: "#" },
+            { answer: "Harris", type: 0, question: "Uno de los matones contratados por Roman en el primer juego.", link: "#" },
+            { answer: "Historia", type: 0, question: "Disciplina que fascina a Drake y le permite resolver misterios antiguos.", link: "#" },
+            { answer: "Hotel", type: 0, question: "Edificio en Nepal que se derrumba con Drake dentro.", link: "#" },
+            { answer: "Humo", type: 0, question: "Bomba de ______. Herramienta ninja que usan los enemigos en Uncharted 3.", link: "#" }
+        ]
+    },
+    {
+        letter: "I",
+        variants: [
+            { answer: "Iram", type: 0, question: "La ciudad de los Pilares, oculta en el desierto de Rub' al Khali.", link: "#" },
+            { answer: "Italia", type: 0, question: "País donde transcurre la subasta de la mansión Rossi.", link: "#" },
+            { answer: "Isla", type: 0, question: "Lugar geográfico común en la saga (una con tesoro, otra con un búnker, etc.).", link: "#" },
+            { answer: "Incendio", type: 0, question: "Fuego descontrolado, como el que consume el castillo francés.", link: "#" },
+            { answer: "Iglesia", type: 0, question: "San Dimas. Lugar en Escocia donde Sam y Nate buscan pistas.", link: "#" },
+            { answer: "Inmortalidad", type: 0, question: "Lo que buscaba Zoran Lazarevic al beber la savia del árbol.", link: "#" },
+            { answer: "Indios", type: 0, question: "Océano Índico. Donde se encuentran muchas de las ubicaciones de U4.", link: "#" },
+            { answer: "Inframundo", type: 0, question: "Las leyendas decían que El Dorado era una puerta al ______.", link: "#" },
+            { answer: "Ilusion", type: 0, question: "Efecto del agua contaminada en U3 que hace ver cosas irreales.", link: "#" },
+            { answer: "Insectos", type: 0, question: "Arañas gigantes que atacan a Drake en las cuevas y ruinas.", link: "#" }
+        ]
+    },
+    {
+        letter: "J",
+        variants: [
+            { answer: "Journal", type: 0, question: "Nombre en inglés del diario lleno de bocetos que lleva Nathan.", link: "#" },
+            { answer: "Jeep", type: 0, question: "Vehículo 4x4 que usas extensivamente en Madagascar.", link: "#" },
+            { answer: "Jungla", type: 0, question: "Entorno predominante en el primer Uncharted.", link: "#" },
+            { answer: "Jamison", type: 0, question: "Experto en demoliciones que trabaja para Nate en la compañía de salvamento.", link: "#" },
+            { answer: "Jardin", type: 0, question: "Zona del castillo o mansión, a veces con laberintos.", link: "#" },
+            { answer: "Joya", type: 0, question: "Objeto de valor, como la esmeralda que roba Chloe.", link: "#" },
+            { answer: "Jaula", type: 0, question: "Estructura de metal en la que cuelgan esqueletos de piratas como advertencia.", link: "#" },
+            { answer: "Jameson", type: 0, question: "Jefe de Nathan en el trabajo de buzo y recuperación marítima.", link: "#" },
+            { answer: "Jeff", type: 0, question: "Cámara que acompaña a Elena en Nepal y es herido.", link: "#" },
+            { answer: "Jet", type: 0, question: "Ski. Vehículo acuático usado en la primera entrega para remontar el río.", link: "#" }
+        ]
+    },
+    {
+        letter: "K",
+        variants: [
+            { answer: "Karl", type: 0, question: "Apellido de Schafer, el explorador que protegió el secreto de Shambhala.", link: "#" },
+            { answer: "Kathmandu", type: 0, question: "Capital de Nepal donde Drake busca el templo con el emblema de la daga.", link: "#" },
+            { answer: "Knot", type: 0, question: "Miembro de Shoreline y mano derecha de Nadine Ross.", link: "#" },
+            { answer: "Khmer", type: 0, question: "Imperio antiguo relacionado con los templos que visita Drake.", link: "#" },
+            { answer: "Kublai", type: 0, question: "Khan. Emperador mongol que regaló la daga phurba a Marco Polo.", link: "#" },
+            { answer: "Kraken", type: 0, question: "Monstruo marino que aparece dibujado en mapas antiguos.", link: "#" },
+            { answer: "Kilos", type: 0, question: "Unidad de peso para medir el oro que sacan de la isla.", link: "#" },
+            { answer: "Kilometros", type: 0, question: "Distancia que Drake suele recorrer a pie o escalando.", link: "#" },
+            { answer: "Pakistan", type: 1, question: "CONTIENE LA K: País donde se encuentra una de las piezas del mapa en Uncharted 2.", link: "#" },
+            { answer: "Walkie", type: 1, question: "CONTIENE LA K: Dispositivo de comunicación (Talkie) que usan los mercenarios.", link: "#" }
+        ]
+    },
+    {
+        letter: "L",
+        variants: [
+            { answer: "Libertalia", type: 0, question: "Colonia pirata utópica fundada por Henry Avery y Thomas Tew.", link: "#" },
+            { answer: "Lazarevic", type: 0, question: "Zoran ______. Criminal de guerra y villano de Uncharted 2.", link: "#" },
+            { answer: "Londres", type: 0, question: "Ciudad donde comienza Uncharted 3 con una pelea en un pub.", link: "#" },
+            { answer: "Luces", type: 0, question: "Puzle de sombras y ______, común en tumbas antiguas.", link: "#" },
+            { answer: "Ladron", type: 0, question: "El desenlace del ______ (A Thief's End), subtítulo de Uncharted 4.", link: "#" },
+            { answer: "Lancha", type: 0, question: "Embarcación rápida que usa Drake para huir o perseguir.", link: "#" },
+            { answer: "Linterna", type: 0, question: "Objeto que se enciende automáticamente en zonas oscuras.", link: "#" },
+            { answer: "Laboratorio", type: 0, question: "Lugar secreto donde se investigaban los efectos de los virus o maldiciones.", link: "#" },
+            { answer: "Legado", type: 0, question: "El ______ Perdido. Título del juego protagonizado por Chloe.", link: "#" },
+            { answer: "Llama", type: 0, question: "Animal que puedes acariciar en el mercado y desbloquear un trofeo.", link: "#" }
+        ]
+    },
+    {
+        letter: "M",
+        variants: [
+            { answer: "Marco", type: 0, question: "Polo. Explorador veneciano cuya flota perdida transportaba la piedra Cintamani.", link: "#" },
+            { answer: "Marlowe", type: 0, question: "Katherine ______. Líder de la orden hermética en Uncharted 3.", link: "#" },
+            { answer: "Museo", type: 0, question: "Lugar en Estambul que Drake y Flynn intentan robar.", link: "#" },
+            { answer: "Mapa", type: 0, question: "Documento cartográfico esencial para encontrar tesoros.", link: "#" },
+            { answer: "Madagascar", type: 0, question: "País africano donde transcurre gran parte de la acción de Uncharted 4.", link: "#" },
+            { answer: "Momias", type: 0, question: "Cadáveres preservados que a menudo asustan al jugador al caer.", link: "#" },
+            { answer: "Maldicion", type: 0, question: "Supuesto hechizo que protege tesoros como El Dorado.", link: "#" },
+            { answer: "Mansion", type: 0, question: "Residencia grande, como la de los Rossi en Italia o la de Marlowe.", link: "#" },
+            { answer: "Monedas", type: 0, question: "Antiguas divisas que suelen encontrarse como tesoros.", link: "#" },
+            { answer: "Mercenario", type: 0, question: "Soldado a sueldo que trabaja para Shoreline o Lazarevic.", link: "#" }
+        ]
+    },
+    {
+        letter: "N",
+        variants: [
+            { answer: "Nadine", type: 0, question: "Ross. Líder de Shoreline que combate contra los hermanos Drake en Uncharted 4.", link: "#" },
+            { answer: "Navarro", type: 0, question: "Atoq ______. Arqueólogo y mano derecha de Roman.", link: "#" },
+            { answer: "Nepal", type: 0, question: "País asiático escenario de la guerra civil en Uncharted 2.", link: "#" },
+            { answer: "Nate", type: 0, question: "Diminutivo por el que todos llaman a Nathan Drake.", link: "#" },
+            { answer: "Naufragio", type: 0, question: "Restos de barcos hundidos que Drake explora buceando.", link: "#" },
+            { answer: "Nieve", type: 0, question: "Clima predominante en las montañas del Himalaya.", link: "#" },
+            { answer: "Notas", type: 0, question: "Papeles escritos dejados por otros exploradores o piratas.", link: "#" },
+            { answer: "Nube", type: 0, question: "Cloud. El juego se puede jugar en la ______ a través de servicios de streaming.", link: "#" },
+            { answer: "Nueva", type: 0, question: "______ Devon. Barrio de Libertalia donde vivían los fundadores.", link: "#" },
+            { answer: "Novia", type: 0, question: "Término que usa Sully para referirse bromeando a Elena al principio.", link: "#" }
+        ]
+    },
+    {
+        letter: "Ñ",
+        variants: [
+            { answer: "Compañero", type: 1, question: "CONTIENE LA Ñ: Palabra que Sully usa constantemente para referirse a Nathan (en doblaje latino).", link: "#" },
+            { answer: "Montaña", type: 1, question: "CONTIENE LA Ñ: Elevación de terreno que Drake escala a menudo.", link: "#" },
+            { answer: "Caña", type: 1, question: "CONTIENE LA Ñ: Material vegetal o estructura precaria que se rompe al pisarla.", link: "#" },
+            { answer: "Pañuelo", type: 1, question: "CONTIENE LA Ñ: Prenda que Nathan usa al cuello en Uncharted 3 (Shemagh).", link: "#" },
+            { answer: "Araña", type: 1, question: "CONTIENE LA Ñ: Insecto molesto que aparece en multitud en las cuevas.", link: "#" },
+            { answer: "Niñez", type: 1, question: "CONTIENE LA Ñ: Etapa de la vida de Drake mostrada en los flashbacks.", link: "#" },
+            { answer: "Puño", type: 1, question: "CONTIENE LA Ñ: Parte de la mano usada en el combate cuerpo a cuerpo.", link: "#" },
+            { answer: "Mañana", type: 1, question: "CONTIENE LA Ñ: Momento del día. Sully dice: '¿Qué tal por la...?'", link: "#" },
+            { answer: "Daño", type: 1, question: "CONTIENE LA Ñ: Lo que recibe el personaje al caer de muy alto.", link: "#" },
+            { answer: "Engaño", type: 1, question: "CONTIENE LA Ñ: Sinónimo de mentira, base de la trama de Uncharted 3 (Drake's Deception).", link: "#" }
+        ]
+    },
+    {
+        letter: "O",
+        variants: [
+            { answer: "Oro", type: 0, question: "Material precioso del que está hecho el ídolo 'El Dorado'.", link: "#" },
+            { answer: "Oceano", type: 0, question: "Gran masa de agua donde ocurre el capítulo del crucero.", link: "#" },
+            { answer: "Ojo", type: 0, question: "El ______ de Indra. Un cómic animado precuela de Uncharted 2.", link: "#" },
+            { answer: "Orfanato", type: 0, question: "St. Francis. Lugar donde crecieron Nathan y Sam.", link: "#" },
+            { answer: "Oscuridad", type: 0, question: "Falta de luz en las cuevas que requiere usar linterna.", link: "#" },
+            { answer: "Objeto", type: 0, question: "Cosa física que puedes recoger y examinar girándola con el mando.", link: "#" },
+            { answer: "Origen", type: 0, question: "El ______ de Nathan Drake es uno de los misterios de la saga.", link: "#" },
+            { answer: "Oculto", type: 0, question: "Estado de un tesoro antes de ser encontrado.", link: "#" },
+            { answer: "Orgullo", type: 0, question: "Pecado capital que a menudo lleva a los villanos a su perdición.", link: "#" },
+            { answer: "Oleoducto", type: 0, question: "Tubería industrial que recorre zonas del desierto.", link: "#" }
+        ]
+    },
+    {
+        letter: "P",
+        variants: [
+            { answer: "Panama", type: 0, question: "País donde transcurre el flashback de la prisión con Sam y Rafe.", link: "#" },
+            { answer: "Pirata", type: 0, question: "Profesión de Henry Avery y Thomas Tew.", link: "#" },
+            { answer: "Phurba", type: 0, question: "Daga ritual dorada que actúa como llave de Shambhala.", link: "#" },
+            { answer: "Piedra", type: 0, question: "Cintamani. Objeto místico que Lazarevic desea.", link: "#" },
+            { answer: "Planeador", type: 0, question: "Paracaídas modificado que usaban Sully y Nate para llegar a la selva.", link: "#" },
+            { answer: "Paracaidas", type: 0, question: "Objeto que se despliega al caer del avión de carga en Uncharted 3.", link: "#" },
+            { answer: "Pistola", type: 0, question: "Arma de fuego corta básica de Nathan (como la 9mm o Para 9).", link: "#" },
+            { answer: "Prision", type: 0, question: "Lugar de encierro, como la cárcel panameña o turca.", link: "#" },
+            { answer: "Puzzles", type: 0, question: "Acertijos mecánicos que el jugador debe resolver para avanzar.", link: "#" },
+            { answer: "Peru", type: 0, question: "País donde Nate y Sully buscan pistas al inicio de la primera entrega.", link: "#" }
+        ]
+    },
+    {
+        letter: "Q",
+        variants: [
+            { answer: "Arqueologo", type: 1, question: "CONTIENE LA Q: Profesión que Harry Flynn desprecia en Drake.", link: "#" },
+            { answer: "Quimera", type: 1, question: "CONTIENE LA Q: Monstruo mitológico o ilusión inalcanzable.", link: "#" },
+            { answer: "Resquicio", type: 1, question: "CONTIENE LA Q: Abertura estrecha por la que Drake se desliza en la pared.", link: "#" },
+            { answer: "Saqueo", type: 1, question: "CONTIENE LA Q: Acción de robar tesoros de lugares antiguos.", link: "#" },
+            { answer: "Reliquia", type: 1, question: "CONTIENE LA Q: Objeto antiguo de valor histórico, como la 'Reliquia Extraña'.", link: "#" },
+            { answer: "Tanque", type: 1, question: "CONTIENE LA Q: Vehículo blindado que persigue a Drake en el pueblo tibetano.", link: "#" },
+            { answer: "Psiquiatrico", type: 1, question: "CONTIENE LA Q: Tipo de institución, 'centro ______', a veces mencionado en broma por la locura de la aventura.", link: "#" },
+            { answer: "Bloqueo", type: 1, question: "CONTIENE LA Q: Obstáculo en el camino que requiere explosivos.", link: "#" },
+            { answer: "Esquivar", type: 1, question: "CONTIENE LA Q: Acción fundamental en combate para evitar golpes.", link: "#" },
+            { answer: "Maquinaria", type: 1, question: "CONTIENE LA Q: Engranajes gigantes que mueven las trampas antiguas.", link: "#" }
+        ]
+    },
+    {
+        letter: "R",
+        variants: [
+            { answer: "Rafe", type: 0, question: "Adler. Antagonista millonario que busca el tesoro de Avery en Uncharted 4.", link: "#" },
+            { answer: "Roman", type: 0, question: "Gabriel ______. Villano principal de 'El Tesoro de Drake'.", link: "#" },
+            { answer: "Raja", type: 0, question: "Eddy ______. Pirata indonesio obsesionado con matar a Drake.", link: "#" },
+            { answer: "Resina", type: 0, question: "Savia del Árbol de la Vida que otorga fuerza sobrenatural.", link: "#" },
+            { answer: "Rub", type: 0, question: "______ al Khali. Desierto donde se pierde la ciudad de Iram.", link: "#" },
+            { answer: "Rio", type: 0, question: "Cuerpo de agua que remontas en moto de agua o lancha.", link: "#" },
+            { answer: "Ruinas", type: 0, question: "Restos de edificios antiguos donde suele desarrollarse el juego.", link: "#" },
+            { answer: "Reloj", type: 0, question: "Mecanismo de la torre de Londres que debes escalar.", link: "#" },
+            { answer: "Ramses", type: 0, question: "Pirata que secuestra a Drake en el barco en Uncharted 3.", link: "#" },
+            { answer: "Rifle", type: 0, question: "Tipo de arma larga, como el AK-47 o el M4.", link: "#" }
+        ]
+    },
+    {
+        letter: "S",
+        variants: [
+            { answer: "Sully", type: 0, question: "Victor Sullivan. Mentor, socio y figura paterna de Nathan.", link: "#" },
+            { answer: "Sam", type: 0, question: "Samuel Drake. Hermano mayor de Nathan que reaparece tras ser dado por muerto.", link: "#" },
+            { answer: "Shambhala", type: 0, question: "Ciudad mítica en el Himalaya, destino final de Uncharted 2.", link: "#" },
+            { answer: "Shoreline", type: 0, question: "Empresa militar privada dirigida por Nadine Ross.", link: "#" },
+            { answer: "Submarino", type: 0, question: "Vehículo nazi encontrado en medio de la selva en el primer juego.", link: "#" },
+            { answer: "Selva", type: 0, question: "Bioma con vegetación densa, típico de la primera aventura.", link: "#" },
+            { answer: "Sarcofago", type: 0, question: "Ataúd de piedra, como el falso ataúd de Sir Francis.", link: "#" },
+            { answer: "Santo", type: 0, question: "Dimas. El 'buen ladrón', clave en las pistas de Avery.", link: "#" },
+            { answer: "Sirena", type: 0, question: "Estatua que debes girar en puzzles o encontrar bajo el agua.", link: "#" },
+            { answer: "Saint", type: 0, question: "______ Francis. El orfanato de los hermanos Drake.", link: "#" }
+        ]
+    },
+    {
+        letter: "T",
+        variants: [
+            { answer: "Tenzin", type: 0, question: "Explorador tibetano que no habla inglés pero salva la vida de Drake.", link: "#" },
+            { answer: "Tew", type: 0, question: "Thomas ______. Pirata que mató a Avery y murió con él.", link: "#" },
+            { answer: "Talbot", type: 0, question: "Mano derecha de Marlowe, experto en magia y engaño.", link: "#" },
+            { answer: "Tibet", type: 0, question: "Región montañosa donde se oculta la entrada a Shambhala.", link: "#" },
+            { answer: "Tesoro", type: 0, question: "Objetivo principal de todas las aventuras de Drake.", link: "#" },
+            { answer: "Tren", type: 0, question: "Vehículo en movimiento escenario de uno de los capítulos más famosos de Uncharted 2.", link: "#" },
+            { answer: "Tumba", type: 0, question: "Lugar de entierro que Drake suele profanar buscando pistas.", link: "#" },
+            { answer: "Torre", type: 0, question: "Estructura alta que siempre hay que escalar (campanarios, atalayas).", link: "#" },
+            { answer: "Traicion", type: 0, question: "Giro narrativo común donde un aliado se vuelve enemigo.", link: "#" },
+            { answer: "Tormenta", type: 0, question: "Fenómeno climático que hunde el barco de Drake al inicio de Uncharted 3.", link: "#" }
+        ]
+    },
+    {
+        letter: "U",
+        variants: [
+            { answer: "Ubar", type: 0, question: "La Atlántida de las Arenas, nombre alternativo para Iram.", link: "#" },
+            { answer: "Urna", type: 0, question: "Vasija que contiene las cenizas o espíritus (Djinn) en la ciudad perdida.", link: "#" },
+            { answer: "Urraca", type: 0, question: "Pájaro que roba cosas brillantes. Sam llama a Nate algo similar metafóricamente.", link: "#" },
+            { answer: "Ubicacion", type: 0, question: "Lugar en el mapa marcado con una X.", link: "#" },
+            { answer: "Ultimo", type: 0, question: "El ______ capítulo de la saga cierra la historia de Nathan.", link: "#" },
+            { answer: "Union", type: 0, question: "El matrimonio de Nate y Elena es una ______ que se pone a prueba.", link: "#" },
+            { answer: "Uzi", type: 0, question: "Tipo de subfusil compacto (Micro 9mm) usado por enemigos.", link: "#" },
+            { answer: "Uncharted", type: 0, question: "Nombre de la franquicia de videojuegos.", link: "#" },
+            { answer: "Universo", type: 0, question: "Conjunto de juegos, libros y cómics que conforman el lore.", link: "#" },
+            { answer: "Uno", type: 0, question: "Número del primer juego: 'El Tesoro de Drake'.", link: "#" }
+        ]
+    },
+    {
+        letter: "V",
+        variants: [
+            { answer: "Vargas", type: 0, question: "Guardia de la prisión panameña que se alía con Rafe y luego es asesinado.", link: "#" },
+            { answer: "Victor", type: 0, question: "Nombre de pila de 'Sully'.", link: "#" },
+            { answer: "Venecia", type: 0, question: "Ciudad italiana con canales que aparece en los cómics y referencias.", link: "#" },
+            { answer: "Valle", type: 0, question: "Depresión geográfica, como el que lleva a Shambhala.", link: "#" },
+            { answer: "Villano", type: 0, question: "Antagonista de la historia (Rafe, Lazarevic, Marlowe).", link: "#" },
+            { answer: "Vehiculo", type: 0, question: "Coche, jeep o barco que controlas en ciertas secuencias.", link: "#" },
+            { answer: "Visor", type: 0, question: "Mira telescópica de un rifle de francotirador.", link: "#" },
+            { answer: "Verdad", type: 0, question: "Lo que Elena siempre busca en sus reportajes.", link: "#" },
+            { answer: "Viaje", type: 0, question: "Desplazamiento largo que hacen los protagonistas por el mundo.", link: "#" },
+            { answer: "Velas", type: 0, question: "Fuente de luz en tumbas antiguas que puedes encender.", link: "#" }
+        ]
+    },
+    {
+        letter: "W",
+        variants: [
+            { answer: "Wyrm", type: 1, question: "CONTIENE LA W: Referencia a dragones o serpientes en cuevas (Easter Egg).", link: "#" },
+            { answer: "Western", type: 1, question: "CONTIENE LA W: Género de películas, el bar de Londres tiene un estilo similar.", link: "#" },
+            { answer: "Winch", type: 1, question: "CONTIENE LA W: Cabrestante del jeep que usas para subir cuestas embarradas.", link: "#" },
+            { answer: "Winchester", type: 1, question: "CONTIENE LA W: Tipo de rifle antiguo o escopeta recortada.", link: "#" },
+            { answer: "Whiskey", type: 1, question: "CONTIENE LA W: Bebida alcohólica que a veces bebe Sully.", link: "#" },
+            { answer: "Walkie", type: 1, question: "CONTIENE LA W: Radio portátil para comunicarse a distancia.", link: "#" },
+            { answer: "New", type: 1, question: "CONTIENE LA W: ______ Devon. La zona residencial de Libertalia.", link: "#" },
+            { answer: "Bowling", type: 1, question: "CONTIENE LA W: Juego de bolos. Elena y Nate bromean sobre jugar.", link: "#" },
+            { answer: "Power", type: 1, question: "CONTIENE LA W: Palabra en generadores que debes encender.", link: "#" },
+            { answer: "Show", type: 1, question: "CONTIENE LA W: Espectáculo. Sully suele decir 'Disfruta del...'", link: "#" }
+        ]
+    },
+    {
+        letter: "X",
+        variants: [
+            { answer: "Extincion", type: 1, question: "CONTIENE LA X: El destino de los ciudadanos de Shambhala.", link: "#" },
+            { answer: "Explotar", type: 1, question: "CONTIENE LA X: Acción de detonar dinamita o granadas.", link: "#" },
+            { answer: "Texto", type: 1, question: "CONTIENE LA X: Palabras escritas en diarios y cartas.", link: "#" },
+            { answer: "Exito", type: 1, question: "CONTIENE LA X: Lograr el objetivo, o desbloquear un trofeo.", link: "#" },
+            { answer: "Extraño", type: 1, question: "CONTIENE LA X: Reliquia ______ (Strange Relic), un huevo de pascua recurrente.", link: "#" },
+            { answer: "Auxilio", type: 1, question: "CONTIENE LA X: Pedir ayuda cuando estás abatido.", link: "#" },
+            { answer: "Asfixia", type: 1, question: "CONTIENE LA X: Forma de eliminar enemigos sigilosamente por la espalda.", link: "#" },
+            { answer: "Conexion", type: 1, question: "CONTIENE LA X: Relación entre pistas históricas.", link: "#" },
+            { answer: "Taxi", type: 1, question: "CONTIENE LA X: Vehículo urbano que rara vez usa Drake.", link: "#" },
+            { answer: "Fenix", type: 1, question: "CONTIENE LA X: Ave mitológica que renace, símbolo de inmortalidad.", link: "#" }
+        ]
+    },
+    {
+        letter: "Y",
+        variants: [
+            { answer: "Yemen", type: 0, question: "País donde Drake es drogado por Marlowe y vaga alucinado.", link: "#" },
+            { answer: "Yeti", type: 0, question: "Criatura de las nieves que resulta ser un guardián disfrazado en Uncharted 2.", link: "#" },
+            { answer: "Yacimiento", type: 0, question: "Lugar arqueológico donde se excavan restos.", link: "#" },
+            { answer: "Yihad", type: 0, question: "Término histórico asociado a conflictos en oriente medio (contexto histórico del juego).", link: "#" },
+            { answer: "Yates", type: 0, question: "Barcos de lujo que a veces se ven en los puertos.", link: "#" },
+            { answer: "Yo", type: 0, question: "Pronombre. 'Soy ______' (It's me), dice Drake al presentarse.", link: "#" },
+            { answer: "Yunque", type: 0, question: "Objeto pesado de herrería que podrías encontrar en ruinas coloniales.", link: "#" },
+            { answer: "Yermo", type: 0, question: "Terreno despoblado y estéril, como el desierto.", link: "#" },
+            { answer: "Yoga", type: 0, question: "Disciplina que Chloe Frazer practica (mencionado en diálogos).", link: "#" },
+            { answer: "Yesterday", type: 0, question: "Palabra en inglés (Ayer). El pasado es clave en la saga.", link: "#" }
+        ]
+    },
+    {
+        letter: "Z",
+        variants: [
+            { answer: "Zoran", type: 0, question: "Lazarevic. Criminal de guerra serbio que busca la inmortalidad.", link: "#" },
+            { answer: "Zombie", type: 0, question: "Apodo coloquial para los españoles malditos de la primera entrega.", link: "#" },
+            { answer: "Zona", type: 0, question: "Área delimitada de combate.", link: "#" },
+            { answer: "Zodiaco", type: 0, question: "Signos astrológicos usados en varios puzles de la saga.", link: "#" },
+            { answer: "Zar", type: 0, question: "Título imperial ruso. Lazarevic es comparado con tiranos de esa región.", link: "#" },
+            { answer: "Zigurat", type: 0, question: "Tipo de templo escalonado similar a las estructuras que escala Drake.", link: "#" },
+            { answer: "Zanja", type: 0, question: "Excavación larga y estrecha en el suelo.", link: "#" },
+            { answer: "Zafiro", type: 0, question: "Piedra preciosa azul que puede ser un tesoro.", link: "#" },
+            { answer: "Zapatos", type: 0, question: "Calzado que Drake ensucia constantemente de barro.", link: "#" },
+            { answer: "Zurdo", type: 0, question: "Lo contrario de diestro. Drake dispara con la derecha.", link: "#" }
+        ]
+    }
+];
 
+        let data = [];
         let currentIndex = 0;
         let timeLeft = 240; 
+        let passCount = 0; 
         let interval;
         let roscoDOM = [];
-        let gameActive = false; // Inicia pausado hasta dar click
+        let gameActive = false;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // --- GENERACIÓN DEL ROSCO ALEATORIO ---
+            // Se ejecuta UNA vez al cargar la página.
+            // Si el jugador da vueltas (saltar), usa este mismo 'data'.
+            data = QUESTIONS_DB.map(entry => {
+                // Elegir una variante al azar
+                const randomVariant = entry.variants[Math.floor(Math.random() * entry.variants.length)];
+                
+                return {
+                    id: entry.letter.toLowerCase(),
+                    letter: entry.letter,
+                    status: 'pending', // Estado inicial
+                    ...randomVariant // Copia answer, question, type, link
+                };
+            });
+
+            createLetters(); 
+            
+            window.addEventListener('resize', updateLayout);
+            document.getElementById('user-input').addEventListener('keydown', (e) => {
+                if(e.key === 'Enter') verifyAnswer();
+            });
+        });
 
         function startGame() {
-            // 1. Ocultar pantalla de inicio
             document.getElementById('start-screen').style.display = 'none';
-            
-            // 2. Iniciar Música
             const music = document.getElementById('game-music');
-            music.volume = 0.3; // Volumen al 30% para no aturdir
-            music.play().catch(e => console.log("Error de audio:", e));
+            music.volume = 0.3; 
+            music.play().catch(e => console.log("Music prevented by browser policy"));
 
-            // 3. Activar lógica de juego
             gameActive = true;
             document.getElementById('user-input').disabled = false;
             document.getElementById('user-input').focus();
             
-            // 4. Arrancar timer y UI
-            createLetters();
             startTimer();
             updateUI();
         }
 
         function updateLayout() {
-            const lettersLayer = document.getElementById('letters-layer');
             const minDim = Math.min(window.innerWidth, window.innerHeight);
             const radius = minDim * 0.40; 
             const total = data.length;
@@ -358,7 +810,7 @@
                 div.innerText = item.letter;
                 layer.appendChild(div);
                 roscoDOM.push(div);
-                item.status = 'pending';
+                // No reseteamos status aquí para mantener consistencia en updates
             });
             updateLayout();
         }
@@ -396,23 +848,43 @@
                 ? `EMPIEZA POR ${current.letter}` 
                 : `CONTIENE LA ${current.letter}`;
             document.getElementById('definition').innerText = current.question;
+            
+            const guideLink = document.getElementById('guide-link');
+            if (current.link && current.link !== "#") {
+                guideLink.href = current.link;
+                guideLink.style.display = "inline-block";
+                guideLink.innerText = "📖 Ver Lore / Pista";
+            } else {
+                guideLink.style.display = "none";
+            }
+
             document.getElementById('user-input').value = '';
         }
 
         function verifyAnswer() {
             if(!gameActive) return;
-            let input = document.getElementById('user-input').value.trim().toLowerCase();
+            const inputField = document.getElementById('user-input');
+            let input = inputField.value.trim().toLowerCase();
             let correct = data[currentIndex].answer.toLowerCase();
             input = input.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             correct = correct.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+            const domNode = roscoDOM[currentIndex];
+
             if(input === correct) {
                 data[currentIndex].status = 'correct';
-                roscoDOM[currentIndex].classList.add('correct');
+                domNode.classList.add('correct', 'anim-correct');
+                inputField.classList.add('flash-green');
             } else {
                 data[currentIndex].status = 'wrong';
-                roscoDOM[currentIndex].classList.add('wrong');
+                domNode.classList.add('wrong', 'anim-wrong');
+                inputField.classList.add('flash-red');
             }
+
+            setTimeout(() => {
+                inputField.classList.remove('flash-green', 'flash-red');
+            }, 500);
+
             currentIndex++;
             if(currentIndex >= data.length) currentIndex = 0;
             updateUI();
@@ -420,6 +892,7 @@
 
         function passTurn() {
             if(!gameActive) return;
+            passCount++; 
             currentIndex++;
             if(currentIndex >= data.length) currentIndex = 0;
             updateUI();
@@ -429,25 +902,81 @@
             gameActive = false;
             clearInterval(interval);
             const correctCount = data.filter(d => d.status === 'correct').length;
+            
+            document.getElementById('ui-layer').style.display = 'none';
             document.getElementById('end-screen').style.display = 'flex';
+            
             let title = "FIN DEL JUEGO";
             if(correctCount === data.length) title = "¡SIC PARVIS MAGNA!";
             document.getElementById('end-title').innerText = title;
             document.getElementById('end-score').innerText = `Tesoros: ${correctCount} de ${data.length}`;
-            
-            // Pausar música al final si quieres
-            // document.getElementById('game-music').pause(); 
+
+            // --- ALGORITMO DE RANKING ---
+            let score = (correctCount * 100) + (timeLeft * 1.5) - (passCount * 5);
+            if (score < 0) score = 0;
+
+            let rankTitle = "";
+            let rankMsg = "";
+
+            if (correctCount === data.length) {
+                rankTitle = "💎 HEREDERO DE DRAKE";
+                rankMsg = "¡Increíble! Tu conocimiento rivaliza con el de Nathan. Un resultado así DEBE quedar registrado en la historia.";
+            } else if (correctCount >= 24) {
+                rankTitle = "🚬 SOCIO DE SULLY";
+                rankMsg = "Jugada maestra. Estás en el Top 5% de exploradores. Asegurá tu lugar en el ranking ahora mismo.";
+            } else if (correctCount >= 15) {
+                rankTitle = "⚔️ MERCENARIO DE SHORELINE";
+                rankMsg = "Tenés agallas y talento, pero te faltan un par de tesoros para la gloria. Guardá tu progreso para competir.";
+            } else {
+                rankTitle = "🗺️ TURISTA PERDIDO";
+                rankMsg = "El camino es difícil, chico. Pero todo gran explorador empieza así. Registrate para recibir ayuda y mejorar.";
+            }
+
+            document.getElementById('rank-display-title').innerText = rankTitle;
+            document.getElementById('rank-display-msg').innerText = rankMsg;
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            window.addEventListener('resize', updateLayout);
-            document.getElementById('user-input').addEventListener('keydown', (e) => {
-                if(e.key === 'Enter') verifyAnswer();
+        function submitScore(e) {
+            e.preventDefault();
+            const email = document.getElementById('player-email').value;
+            const btn = document.querySelector('.submit-btn');
+            
+            btn.innerText = "⏳ ENVIANDO DATOS...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                console.log("Lead capturado:", email); 
+                btn.style.background = "#2e7d32";
+                btn.innerText = "✅ ¡REGISTRADO EN MARCADORES!";
+                alert("¡Tu nombre ha sido grabado en la historia! (Revisa tu correo)");
+            }, 1500);
+        }
+
+        function copyResult() {
+            let mapStr = "";
+            let counter = 0;
+
+            data.forEach((item) => {
+                if(item.status === 'correct') mapStr += '✅';
+                else if(item.status === 'wrong') mapStr += '❌';
+                else mapStr += '⚪'; 
+                
+                counter++;
+                if(counter % 9 === 0) mapStr += '\n'; 
             });
-            // Ya no iniciamos createLetters/StartTimer aquí, sino en startGame()
-            // Simplemente posicionamos las letras iniciales para que se vea bonito de fondo
-            createLetters(); 
-        });
+            
+            const correctCount = data.filter(d => d.status === 'correct').length;
+            const text = `🧭 Uncharted Quiz: Edición Experto\n\n${mapStr}\n🏆 Puntuación: ${correctCount}/${data.length}\n¿Sos un verdadero cazatesoros? ¡Ponete a prueba! [PON_TU_WEB_AQUI]`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.share-btn');
+                const originalText = btn.innerText;
+                btn.innerText = "¡COPIADO!";
+                setTimeout(() => btn.innerText = originalText, 2000);
+            }).catch(err => {
+                alert("No se pudo copiar automáticamente. Hacé captura de pantalla.");
+            });
+        }
     </script>
 </body>
 </html>
